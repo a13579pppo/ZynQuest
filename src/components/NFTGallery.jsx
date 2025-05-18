@@ -1,49 +1,61 @@
-.gallery-container {
-  padding: 20px;
-  font-family: sans-serif;
-}
+import React, { useEffect, useState } from 'react';
+import nftData from '../data/nfts';
+import './NFTGallery.css';
 
-.nft-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-}
+const NFTGallery = ({ userLevel = 3 }) => {
+  const [ownedNFTs, setOwnedNFTs] = useState([]);
 
-.nft-card {
-  background: #fff;
-  border: 1px solid #ccc;
-  border-radius: 14px;
-  width: 180px;
-  padding: 10px;
-  box-shadow: 0 0 8px rgba(0,0,0,0.1);
-  text-align: center;
-}
+  useEffect(() => {
+    const saved = JSON.parse(localStorage.getItem('ownedNFTs')) || [];
+    setOwnedNFTs(saved);
+  }, []);
 
-.nft-card img {
-  width: 100%;
-  border-radius: 10px;
-}
+  const handleBuy = (nft) => {
+    if (ownedNFTs.includes(nft.id)) {
+      alert("You already own this NFT!");
+      return;
+    }
 
-.nft-card button {
-  margin-top: 10px;
-  padding: 6px 12px;
-  border: none;
-  background-color: #3b82f6;
-  color: white;
-  border-radius: 8px;
-  cursor: pointer;
-}
+    // شبیه‌سازی پرداخت واقعی با Tonkeeper در آینده جایگزین خواهد شد
+    const confirmBuy = window.confirm(`Buy "${nft.name}" for ${nft.priceTON} TON?`);
+    if (confirmBuy) {
+      const updated = [...ownedNFTs, nft.id];
+      setOwnedNFTs(updated);
+      localStorage.setItem('ownedNFTs', JSON.stringify(updated));
+      alert("NFT purchased successfully!");
+    }
+  };
 
-.nft-card button:disabled {
-  background-color: gray;
-  cursor: not-allowed;
-}
+  return (
+    <div className="gallery-container">
+      <h1>ZynQuest NFT Gallery</h1>
+      <div className="nft-grid">
+        {nftData.map((nft) => (
+          <div
+            key={nft.id}
+            className={`nft-card ${userLevel >= nft.levelRequired ? '' : 'locked'}`}
+          >
+            <img src={nft.image} alt={nft.name} />
+            <div className="nft-info">
+              <h3>{nft.name}</h3>
+              <p>{nft.category} — {nft.priceTON} TON</p>
+              <p>Level Required: {nft.levelRequired}</p>
+              {userLevel >= nft.levelRequired ? (
+                <button
+                  onClick={() => handleBuy(nft)}
+                  disabled={ownedNFTs.includes(nft.id)}
+                >
+                  {ownedNFTs.includes(nft.id) ? "Owned" : "Buy"}
+                </button>
+              ) : (
+                <button disabled>Locked</button>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
 
-.message-box {
-  margin-top: 20px;
-  padding: 10px;
-  background: #ecfdf5;
-  color: #065f46;
-  border: 1px solid #34d399;
-  border-radius: 8px;
-}
+export default NFTGallery;
