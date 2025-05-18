@@ -1,0 +1,25 @@
+.profile-container {
+  padding: 20px;
+  font-family: sans-serif;
+}
+
+.owned-nfts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.owned-nft-card {
+  background: #f3f4f6;
+  border-radius: 14px;
+  width: 160px;
+  padding: 10px;
+  text-align: center;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+.owned-nft-card img {
+  width: 100%;
+  border-radius: 10px;
+}
